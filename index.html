@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Concordance — Acorn International School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        parchment: '#F4ECD8', 'parchment-light': '#FAF6EE',
+        navy: '#1B2A4A', 'navy-light': '#2C4270',
+        gold: '#B8893A', 'gold-light': '#D4A85A',
+        amber: '#C77D3A', oxblood: '#7A2E2E',
+      },
+      fontFamily: {
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        body: ['"EB Garamond"', 'Georgia', 'serif'],
+      },
+    },
+  },
+}
+</script>
+<style>
+* { box-sizing: border-box; }
+body { font-family: 'EB Garamond', Georgia, serif; background: #F4ECD8; color: #1B2A4A; }
+.slide-over { animation: slideIn 0.2s ease-out; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.small-caps { font-variant: small-caps; letter-spacing: 0.08em; }
+::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #F4ECD8; } ::-webkit-scrollbar-thumb { background: #B8893A; border-radius: 3px; }
+.vocab-chip { display: inline-flex; background: rgba(27,42,74,0.05); border: 1px solid rgba(27,42,74,0.2); border-radius: 3px; padding: 1px 7px; font-size: 0.78rem; margin: 2px; }
+.stream-b { border-left: 3px solid #1B2A4A; }
+.stream-i { border-left: 3px solid #B8893A; }
+select { background: #FAF6EE; border: 1px solid rgba(184,137,58,0.4); border-radius: 3px; padding: 2px 6px; font-family: 'EB Garamond', serif; color: #1B2A4A; font-size: 0.88rem; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState } = React;
+
+// ─── CURRICULUM (transcribed from Acorn_Integrated_History.pdf) ───────────────
+const CURRICULUM = { years: [
+  {
+    id: 7, label: "Prima Media", era: "The Medieval World",
+    britishArc: "What is history? → Vikings & 1066 → Norman consolidation → Crown vs Church → the medieval crisis → the dynastic wars.",
+    italianArc: "Fall of Rome → barbarian & Byzantine kingdoms → Islam & feudalism → Carolingians & Empire → communes, Crusades & papacy → national monarchies & signorie.",
+    themes: [
+      {
+        id: "y7-sep", period: "September",
+        title: "Foundations — Reading the Past",
+        enquiryQuestion: "How do we know what happened long ago, and how do we mark the end of one age and the start of another?",
+        bridge: { concept: "Chronology & Evidence", gloss: "Both streams open at a threshold — the British stream learns the historian's tools, while the Italian stream watches the ancient world end and the medieval begin." },
+        british: {
+          topics: "What is history? Timelines and chronological order. Types of evidence and how historians use them.",
+          knowledge: "The shape of the past: periods, centuries, BCE/CE. Why historical events matter and how we sequence them.",
+          skills: "Chronology; ordering events; first handling of sources.",
+          assessment: "Build a class timeline; short 'how do we know?' source task; end-of-unit test."
+        },
+        italian: {
+          topics: "The Roman Empire: crisis and threats; persecutions, Christianity and women; Diocletian and the Tetrarchy; the fall of the West (476).",
+          knowledge: "Internal and external causes of the fall of the Western Empire; Diocletian's reforms.",
+          skills: "Cause and consequence; reading the end of a historical era.",
+          assessment: "Written test / oral colloquium; concept map of internal vs external causes."
+        },
+        crossStream: "Both streams begin by asking how we divide and date the past — the British stream in the abstract, the Italian stream through the concrete 'end' of Rome in 476.",
+        vocab: [{ en:"chronology", it:"cronologia" },{ en:"source", it:"fonte" },{ en:"century", it:"secolo" },{ en:"Middle Ages", it:"Medioevo" },{ en:"fall of Rome", it:"caduta di Roma" }],
+        differentiation: { access:"Pre-cut timeline strips and a source-type sorting mat.", stretch:"Argue whether 476 is really 'the end' of Rome or a convenient label." }
+      },
+      {
+        id: "y7-oct", period: "October",
+        title: "Invasion & the Remaking of Kingdoms",
+        enquiryQuestion: "What happens to a society when newcomers seize power?",
+        bridge: { concept: "Change & Continuity", gloss: "Post-Roman Europe is remade by incomers — Vikings and Normans in Britain, Goths, Byzantines and Lombards in Italy." },
+        british: {
+          topics: "The Vikings: origins and raids. 1066 and the Norman Conquest: the three claimants, Stamford Bridge, Hastings.",
+          knowledge: "Why the Vikings raided and settled; the disputed succession of 1066 and its resolution at Hastings.",
+          skills: "Causation; interpretation; weighing conflicting accounts.",
+          assessment: "Narrative account of 1066; 'How did Harold die?' interpretation enquiry; interpretation analysis of William I."
+        },
+        italian: {
+          topics: "The Romano-barbaric kingdoms; Theodoric; Justinian; Lombards, 'Romania', Liutprand.",
+          knowledge: "Roman–barbarian integration; the Eastern Empire under Justinian; the Lombard presence in Italy.",
+          skills: "Change & continuity; reading visual and written sources.",
+          assessment: "Formative tests; concept maps; study of visual and written sources."
+        },
+        crossStream: "Both islands and peninsula are reshaped by invaders who must rule populations not their own — a shared problem of legitimacy that sets up the feudal solutions of November.",
+        vocab: [{ en:"invasion", it:"invasione" },{ en:"conquest", it:"conquista" },{ en:"migration", it:"migrazione" },{ en:"barbarian kingdoms", it:"regni romano-barbarici" },{ en:"Norman", it:"Normanno" }],
+        differentiation: { access:"Mapped migration routes with prompts.", stretch:"Compare how Normans and Lombards each legitimised conquered rule." }
+      },
+      {
+        id: "y7-nov", period: "November",
+        title: "Power, Land & Faith — The Feudal Order",
+        enquiryQuestion: "How do you hold on to power over land and people you have just conquered?",
+        bridge: { concept: "Power & Social Structure", gloss: "New rulers bind land and loyalty through feudal hierarchy; meanwhile a new faith reshapes the Mediterranean world." },
+        british: {
+          topics: "William's consolidation: the 'to-do list', castle-building, the Domesday Book, the feudal system.",
+          knowledge: "The mechanics of Norman control — land, oaths, surveillance and force; the feudal pyramid.",
+          skills: "Cause & consequence; structural analysis of a system of control.",
+          assessment: "Castle design with a structural-analysis note explaining how it secured power; a feudal-system diagram."
+        },
+        italian: {
+          topics: "Islam and Muhammad: birth and expansion. Feudal society in central Europe: structure and development.",
+          knowledge: "The rise and spread of Islam; the structure and growth of European feudal society.",
+          skills: "Similarity & difference; analysing social structures and belief systems.",
+          assessment: "Source study (visual & written); early-Islamic expansion map with commentary."
+        },
+        crossStream: "Both streams study the medieval answer to the problem of order — feudal bonds of land and loyalty — while the Italian stream adds the parallel rise of Islam reshaping the Mediterranean the Normans and Italians lived around.",
+        vocab: [{ en:"feudalism", it:"feudalesimo" },{ en:"vassal", it:"vassallo" },{ en:"fief", it:"feudo" },{ en:"castle", it:"castello" },{ en:"Islam", it:"Islam" },{ en:"caliphate", it:"califfato" }],
+        differentiation: { access:"A labelled feudal-pyramid frame to complete.", stretch:"Evaluate whether fear or reward did more to hold the feudal order together." }
+      },
+      {
+        id: "y7-decjan", period: "December / January",
+        title: "Church & Crown — Two Powers",
+        enquiryQuestion: "Who should hold ultimate authority — the crown or the Church?",
+        bridge: { concept: "Authority & Legitimacy", gloss: "Religious and political power are deeply entangled — and increasingly in tension." },
+        british: {
+          topics: "Religion in the Middle Ages: belief as a means of control. The life of monks and nuns.",
+          knowledge: "How the medieval Church shaped belief, behaviour and daily life; the monastic world.",
+          skills: "Inference; empathy grounded in evidence.",
+          assessment: "Explanation task: how did the Church control people?; an evidence-based account of monastic routine."
+        },
+        italian: {
+          topics: "Merovingians and Carolingians: Clovis, Charles Martel, Pepin, the Donation of Constantine, Charlemagne. The Holy Roman Empire: Otto I; spiritual vs temporal power.",
+          knowledge: "The Frankish kingdom and the imperial revival; the original clash of spiritual and temporal authority.",
+          skills: "Source analysis; significance; oral argument.",
+          assessment: "Textual analysis of the Donation of Constantine and an oral exposition on spiritual vs temporal power."
+        },
+        crossStream: "The British stream shows the Church's power over individual minds; the Italian stream shows the same Church crowning and contesting emperors — two scales of the medieval Church's authority.",
+        vocab: [{ en:"monastery", it:"monastero" },{ en:"pope", it:"papa" },{ en:"emperor", it:"imperatore" },{ en:"Holy Roman Empire", it:"Sacro Romano Impero" },{ en:"temporal power", it:"potere temporale" },{ en:"spiritual power", it:"potere spirituale" }],
+        differentiation: { access:"Paired 'Church power / royal power' sorting cards.", stretch:"Use the Donation of Constantine to discuss how a forged source can still shape real history." }
+      },
+      {
+        id: "y7-febmar", period: "February / March",
+        title: "The Limits of Power",
+        enquiryQuestion: "How — and by whom — was the power of medieval rulers limited?",
+        bridge: { concept: "Power & Its Constraints", gloss: "Across Europe, authority is checked from many directions — by the Church, by barons, by self-governing towns, and by revolt." },
+        british: {
+          topics: "Crown vs Church: the murder of Thomas Becket. Magna Carta; the creation of Parliament; the Peasants' Revolt; law, order, crime and punishment.",
+          knowledge: "How English royal power came to be limited by charter, by Parliament and by popular resistance.",
+          skills: "Causation; consequence; significance.",
+          assessment: "Front-page newspaper report on Becket's death; a significance task on Magna Carta; consequences of the Peasants' Revolt."
+        },
+        italian: {
+          topics: "The Concordat of Worms and the Eastern Schism; the maritime republics (Venice); the Crusades; the communes and Barbarossa; Frederick II; Manfred and the Magna Charta.",
+          knowledge: "The Investiture Controversy resolved at Worms; commercial power of the maritime republics; the geopolitical impact of the Crusades; the communes' struggle with the Empire.",
+          skills: "Causation; analysing trade and conflict; significance.",
+          assessment: "Written tests; analysis of Venetian trade routes and crusader diaries."
+        },
+        crossStream: "Both streams literally meet on Magna Carta: the British stream studies the 1215 charter, the Italian stream the wider European wave — Worms, the communes, Barbarossa — in which rulers everywhere were being made to share power.",
+        vocab: [{ en:"Magna Carta", it:"Magna Charta" },{ en:"parliament", it:"parlamento" },{ en:"commune", it:"comune" },{ en:"crusade", it:"crociata" },{ en:"investiture", it:"investitura" },{ en:"charter", it:"carta" }],
+        differentiation: { access:"A 'who limited the king?' matching grid.", stretch:"Rank the four checks on royal power (Church, barons, towns, revolt) by long-term significance." }
+      },
+      {
+        id: "y7-apr", period: "April",
+        title: "Crisis, Disease & the Shaking of the Medieval World",
+        enquiryQuestion: "Why is the fourteenth century called an age of crisis?",
+        bridge: { concept: "Crisis & Consequence", gloss: "Plague, schism and the cracking of the universal powers shake the medieval order and clear the ground for national monarchies." },
+        british: {
+          topics: "Health and medicine in the Middle Ages; the Black Death; medieval healers. Life in the Middle Ages project.",
+          knowledge: "Medieval ideas of cleanliness and cure; the causes, course and consequences of the Black Death.",
+          skills: "Source analysis; tackling and correcting misconceptions.",
+          assessment: "Source analysis of the Black Death; the 'Botchett & Leggit' theme-park pamphlet correcting medical misconceptions; end-of-unit test."
+        },
+        italian: {
+          topics: "France, Boniface VIII and the 'slap of Anagni'; Spain, the Moors and the Reconquista; the Western Schism and Cola di Rienzo.",
+          knowledge: "The crisis of the universal powers (papacy and empire) and the consolidation of national monarchies; the end of the Reconquista.",
+          skills: "Change over time; building parallel chronologies.",
+          assessment: "Oral interrogations; parallel chronologies of the fourteenth-century crisis."
+        },
+        crossStream: "The British stream lives the crisis at the level of the body and the village (plague), the Italian stream at the level of popes and kingdoms (schism, the fall of the universal powers) — the same century of upheaval, two scales.",
+        vocab: [{ en:"plague", it:"peste" },{ en:"Black Death", it:"peste nera" },{ en:"schism", it:"scisma" },{ en:"monarchy", it:"monarchia" },{ en:"Reconquista", it:"Reconquista" }],
+        differentiation: { access:"A guided source-grid for the Black Death.", stretch:"Connect plague, labour shortage and the Peasants' Revolt into one causal chain." }
+      },
+      {
+        id: "y7-may", period: "May",
+        title: "The Rise of New States",
+        enquiryQuestion: "After feudalism fragments, who takes control — kings, or city-lords?",
+        bridge: { concept: "State Formation", gloss: "Britain consolidates into a warring dynastic kingdom; Italy into competing signorie and principalities — two answers to the same question." },
+        british: {
+          topics: "The conquest of Wales; Scotland — Stirling Bridge, Falkirk, Bannockburn, the death of William Wallace. The Hundred Years War; York vs Lancaster and the Wars of the Roses.",
+          knowledge: "English expansion within the British Isles; the causes and course of the Hundred Years War and the dynastic Wars of the Roses.",
+          skills: "Causation essay-writing; sustained argument.",
+          assessment: "Causation essay on the Hundred Years War; a group project on the Wars of the Roses."
+        },
+        italian: {
+          topics: "The monarchical model; the signorie; principalities and the wars in Italy.",
+          knowledge: "The transition from communes to signorie to principalities in Italy; the political evolution of cross-Channel monarchy.",
+          skills: "Synthesis; geopolitical mapping.",
+          assessment: "Geopolitical synthesis maps of fifteenth-century Italy."
+        },
+        crossStream: "Both streams close the Middle Ages on state-building — the British through dynastic warfare toward a stronger crown, the Italian through the rise of the signorie — directly setting up Year 8's early-modern monarchies.",
+        vocab: [{ en:"dynasty", it:"dinastia" },{ en:"succession", it:"successione" },{ en:"signoria", it:"signoria" },{ en:"principality", it:"principato" },{ en:"war", it:"guerra" }],
+        differentiation: { access:"A labelled family-tree frame for York vs Lancaster.", stretch:"Compare the English crown and an Italian signoria as routes out of feudal fragmentation." }
+      },
+      {
+        id: "y7-jun", period: "June",
+        title: "Consolidation & Review",
+        enquiryQuestion: "What is the single most important way the world changed across the Middle Ages?",
+        bridge: { concept: "Synthesis", gloss: "Students review the year's arc and the second-order concepts — chronology, cause, change, significance — across both streams." },
+        british: {
+          topics: "Review of key competencies and timeline milestones; theatre rehearsal and review.",
+          knowledge: "Consolidation of the year's British medieval narrative and skills.",
+          skills: "Synthesis; reflection on chronology and causation.",
+          assessment: "Final portfolio overview."
+        },
+        italian: {
+          topics: "General consolidation and review of the year's programme (ripasso).",
+          knowledge: "Consolidation of the European/Mediterranean medieval narrative.",
+          skills: "Synthesis across the year.",
+          assessment: "Final assessment of historical competencies acquired."
+        },
+        crossStream: "A shared closing reflection lets students trace one theme (e.g. the limiting of power, or the remaking of kingdoms) across both streams from 476 to 1492.",
+        vocab: [{ en:"review", it:"ripasso" },{ en:"competency", it:"competenza" },{ en:"significance", it:"significatività" }],
+        differentiation: { access:"A structured one-page year-on-a-page organiser.", stretch:"A short argued response on the year's biggest turning point." }
+      }
+    ]
+  },
+  {
+    id: 8, label: "Seconda Media", era: "The Early Modern World",
+    britishArc: "Tudors & Elizabeth → the Stuart crisis & civil war → Restoration → Georgians → empire in India → Nelson → the slave trade & abolition → Tudor-to-Victorian change.",
+    italianArc: "Exploration & Reformation → Europe's crisis of authority → absolutism & Enlightenment → the American Revolution → Industrial & French Revolutions → Napoleon & Vienna → 1848 → Italian Unification.",
+    themes: [
+      {
+        id: "y8-sep", period: "September",
+        title: "The Atlantic World & Exploration",
+        enquiryQuestion: "How did the discovery of new worlds reshape the old one?",
+        bridge: { concept: "Connection & Consequence", gloss: "A newly connected globe brings wealth, conquest, a slave economy and religious upheaval." },
+        british: {
+          topics: "The Tudors and Elizabethan Britain: dynasty, Elizabeth I, society and daily life. The Reformation: Luther, indulgences, the Council of Trent.",
+          knowledge: "The Tudor dynasty and the significance of Elizabeth I's reign; the social hierarchy of Tudor England.",
+          skills: "Change & continuity; source analysis.",
+          assessment: "Source analysis; Change & Continuity task; the Spanish Armada essay."
+        },
+        italian: {
+          topics: "The Atlantic world: Columbus, the pre-Columbian civilisations, the slave trade, the world-economy.",
+          knowledge: "The geographical discoveries and their consequences; the birth of a world-economy; the Protestant Reformation and Catholic response.",
+          skills: "Consequence; comparing civilisations; significance.",
+          assessment: "Written and oral tests (in itinere)."
+        },
+        crossStream: "Elizabethan England's sea-power and the Armada belong to the same Atlantic age the Italian stream studies globally — exploration, the slave economy and the religious split that reordered Europe.",
+        vocab: [{ en:"exploration", it:"esplorazione" },{ en:"colony", it:"colonia" },{ en:"slave trade", it:"tratta degli schiavi" },{ en:"world-economy", it:"economia-mondo" },{ en:"Reformation", it:"Riforma" },{ en:"indulgence", it:"indulgenza" }],
+        differentiation: { access:"An annotated world map of the new trade routes.", stretch:"Weigh the Atlantic world's benefits and human costs in a balanced paragraph." }
+      },
+      {
+        id: "y8-oct", period: "October",
+        title: "The Crisis of Authority",
+        enquiryQuestion: "What happens when subjects stop accepting the authority of their rulers?",
+        bridge: { concept: "Authority & Conflict", gloss: "Across seventeenth-century Europe, authority fractures into civil war, religious war and dynastic overreach." },
+        british: {
+          topics: "The English crisis of authority: the Stuarts, the English Civil War, Cromwell.",
+          knowledge: "Causes and consequences of the English Civil War; the collapse and remaking of royal authority.",
+          skills: "Causation; source inference.",
+          assessment: "'Why did the English Civil War start?' causation essay; source analysis and inference."
+        },
+        italian: {
+          topics: "The European crisis of authority: Charles V, Philip II, Catherine de' Medici; the French Wars of Religion (St Bartholomew, the Huguenots); the decline of Spain.",
+          knowledge: "Charles V's imperial project, Philip II's hegemony, the French religious wars and the factors behind Spanish decline.",
+          skills: "Causation; comparison across states.",
+          assessment: "Structured written test of competencies."
+        },
+        crossStream: "The British civil war is one national instance of a continent-wide seventeenth-century crisis — the Italian stream supplies the European pattern (religious war, dynastic strain) that makes England's upheaval legible.",
+        vocab: [{ en:"civil war", it:"guerra civile" },{ en:"republic", it:"repubblica" },{ en:"wars of religion", it:"guerre di religione" },{ en:"hegemony", it:"egemonia" },{ en:"decline", it:"declino" }],
+        differentiation: { access:"A cause-card sort for the Civil War.", stretch:"Compare the English and French conflicts: religion, money, or power?" }
+      },
+      {
+        id: "y8-nov", period: "November",
+        title: "Absolutism & Enlightenment",
+        enquiryQuestion: "Should a monarch's power have limits?",
+        bridge: { concept: "Models of Power", gloss: "Two answers emerge — restored, limited monarchy in Britain and royal absolutism in France — just as the Enlightenment begins to question both." },
+        british: {
+          topics: "The Restoration and the 'Merry Monarch': Charles II.",
+          knowledge: "The restoration of the monarchy and the cultural and political changes of the period.",
+          skills: "Change & continuity; source analysis.",
+          assessment: "Source analysis of the Restoration period."
+        },
+        italian: {
+          topics: "The Thirty Years War; the Sun King — Louis XIV, Colbert and Versailles; the Enlightenment; the wars of succession.",
+          knowledge: "The model of French absolutism; the birth of the Enlightenment; the new European balance after the wars of succession.",
+          skills: "Comparison; significance of ideas.",
+          assessment: "Formative tests (in itinere)."
+        },
+        crossStream: "Set Charles II's limited, restored crown beside Louis XIV's Versailles absolutism: the two streams together stage the central early-modern debate about the limits of royal power that the Enlightenment will press.",
+        vocab: [{ en:"absolutism", it:"assolutismo" },{ en:"court", it:"corte" },{ en:"Enlightenment", it:"Illuminismo" },{ en:"reason", it:"ragione" },{ en:"succession", it:"successione" }],
+        differentiation: { access:"An 'absolute vs limited' comparison frame.", stretch:"Argue which model an Enlightenment thinker would prefer, and why." }
+      },
+      {
+        id: "y8-dec", period: "December",
+        title: "Imperial Fractures",
+        enquiryQuestion: "Why do empires crack at their margins?",
+        bridge: { concept: "Cause & Consequence", gloss: "Authority strains at the edges — Jacobite risings at home, colonial revolt abroad." },
+        british: {
+          topics: "Exit the Stuarts, enter the Georgians; William of Orange (1690); the Battle of Culloden and the massacre of Glencoe.",
+          knowledge: "The Stuart-to-Georgian transition and the suppression of the Jacobite challenge.",
+          skills: "Change & continuity; mapping social and political transformation.",
+          assessment: "Change & Continuity essay."
+        },
+        italian: {
+          topics: "Imperial fractures: Europeans in the Americas; the thirteen colonies and their relationship with the mother country; the American Revolution and the birth of the USA.",
+          knowledge: "European colonisation of the Americas, the fiscal and political quarrels with London, and the outbreak of the American Revolution.",
+          skills: "Causation; analysing revolt and independence.",
+          assessment: "End-of-unit written test."
+        },
+        crossStream: "The Jacobite risings (British stream) and the American Revolution (Italian stream) are two fractures in the same expanding British imperial system — one internal, one colonial — studied in the same window.",
+        vocab: [{ en:"empire", it:"impero" },{ en:"colony", it:"colonia" },{ en:"rebellion", it:"ribellione" },{ en:"independence", it:"indipendenza" },{ en:"revolution", it:"rivoluzione" }],
+        differentiation: { access:"A labelled map of imperial flashpoints.", stretch:"Compare why one fracture (Culloden) was crushed and another (America) succeeded." }
+      },
+      {
+        id: "y8-jan", period: "January",
+        title: "The Age of Revolutions",
+        enquiryQuestion: "What makes an age 'revolutionary'?",
+        bridge: { concept: "Revolution & Transformation", gloss: "Industrial, political and imperial revolutions remake the world at once." },
+        british: {
+          topics: "The British Empire in India: the East India Company and the impact of British rule.",
+          knowledge: "The establishment and expansion of British India; the Company's mechanics and the socio-economic impact of imperial rule.",
+          skills: "Interpretation; primary-source evaluation.",
+          assessment: "Interpretation analysis of British rule in India; primary-source evaluation."
+        },
+        italian: {
+          topics: "The Industrial Revolution; the French Revolution. From the storming of the Bastille to the Terror.",
+          knowledge: "The stages and causes of the first Industrial Revolution; the social, economic and political causes of the French Revolution.",
+          skills: "Causation; synthesis with data.",
+          assessment: "Written tests and synthesis graphs (in itinere)."
+        },
+        crossStream: "Industrial, political and imperial revolution are one entangled upheaval: British India (commerce/empire) and the Industrial and French Revolutions (economy/politics) are the same revolutionary age from different angles.",
+        vocab: [{ en:"industrial revolution", it:"rivoluzione industriale" },{ en:"factory", it:"fabbrica" },{ en:"French Revolution", it:"Rivoluzione francese" },{ en:"rights", it:"diritti" },{ en:"terror", it:"Terrore" }],
+        differentiation: { access:"A 'three revolutions' graphic organiser.", stretch:"Argue which revolution — industrial, political or imperial — changed ordinary lives most." }
+      },
+      {
+        id: "y8-feb", period: "February",
+        title: "Clashes of Empire & Restoration",
+        enquiryQuestion: "Can you put an old world back together after a revolution?",
+        bridge: { concept: "Change vs Restoration", gloss: "The Napoleonic wars convulse Europe; the Congress of Vienna tries to restore the old order." },
+        british: {
+          topics: "Nelson vs Napoleon: the Battle of Trafalgar; 'crossing the T'.",
+          knowledge: "Britain's naval supremacy and the significance of Trafalgar in the Napoleonic struggle.",
+          skills: "Interpretation; essay-writing.",
+          assessment: "Interpretation analysis; an essay on Trafalgar."
+        },
+        italian: {
+          topics: "Napoleon; the Congress of Vienna and the Restoration.",
+          knowledge: "Napoleon's rise, the spread of institutional reform, the fall of his empire, and the geopolitical redrawing at Vienna (legitimacy and balance).",
+          skills: "Causation; significance; synthesis.",
+          assessment: "Multiple-choice tests and oral syntheses."
+        },
+        crossStream: "Trafalgar (British stream) is one decisive episode within the Napoleonic story the Italian stream tells whole — right through to the attempt at Vienna to restore the pre-revolutionary order.",
+        vocab: [{ en:"Napoleon", it:"Napoleone" },{ en:"battle", it:"battaglia" },{ en:"Congress of Vienna", it:"Congresso di Vienna" },{ en:"restoration", it:"restaurazione" },{ en:"balance of power", it:"equilibrio" }],
+        differentiation: { access:"A timeline of the Napoleonic wars with Trafalgar marked.", stretch:"Evaluate whether the Vienna settlement could ever have lasted." }
+      },
+      {
+        id: "y8-mar", period: "March",
+        title: "Ideologies & Social Movements",
+        enquiryQuestion: "How do ideas become movements that change society?",
+        bridge: { concept: "Ideology & Agency", gloss: "New ideologies — abolition, liberalism, nationalism — mobilise people to remake their societies." },
+        british: {
+          topics: "The transatlantic slave trade and the abolition movement within Britain.",
+          knowledge: "The origins and development of the slave trade; its impact on Africa, the Americas and Europe; the rise of abolition.",
+          skills: "Causation; structural analysis of a movement.",
+          assessment: "'Why was slavery abolished?' essay."
+        },
+        italian: {
+          topics: "The uprisings of 1820–21 and 1830–31; the revolutions of 1848 (the 'Springtime of Peoples').",
+          knowledge: "Opposition to the Restoration through secret societies; the constitutional uprisings and the 1848 revolutions.",
+          skills: "Comparison; analysing political documents.",
+          assessment: "Comparative analysis of constitutional documents (in itinere)."
+        },
+        crossStream: "Abolition (British stream) and the liberal-national uprisings of 1820–48 (Italian stream) are two faces of the same age of ideologically driven mass movements — rights, freedom and nationhood becoming causes worth rising for.",
+        vocab: [{ en:"abolition", it:"abolizione" },{ en:"liberalism", it:"liberalismo" },{ en:"nationalism", it:"nazionalismo" },{ en:"uprising", it:"moto" },{ en:"constitution", it:"costituzione" }],
+        differentiation: { access:"A 'grievance → idea → movement' chain to complete.", stretch:"Compare how abolitionists and 1848 revolutionaries turned ideas into action." }
+      },
+      {
+        id: "y8-apr", period: "April",
+        title: "The Making of Modern States",
+        enquiryQuestion: "What does it take to make a modern nation?",
+        bridge: { concept: "State Formation & National Identity", gloss: "Both streams arrive at the forging of the modern nation-state." },
+        british: {
+          topics: "From Tudor to Victorian Britain: what changed?",
+          knowledge: "Long-run social, economic and technological change across Britain's domestic timeline.",
+          skills: "Change & continuity over centuries; synthesis.",
+          assessment: "A change essay (Tudor to Victorian)."
+        },
+        italian: {
+          topics: "The making of modern states: Italian Unification; unity and brigandage.",
+          knowledge: "The political and military process of the Risorgimento; the proclamation of the Kingdom of Italy (1861); the southern question and brigandage.",
+          skills: "Causation; significance; synthesis.",
+          assessment: "Structured written test."
+        },
+        crossStream: "Britain's slow internal modernisation and Italy's dramatic unification are two routes to the same nineteenth-century destination — the modern nation-state — letting students compare evolution with revolution.",
+        vocab: [{ en:"unification", it:"unità" },{ en:"nation-state", it:"stato nazionale" },{ en:"Risorgimento", it:"Risorgimento" },{ en:"southern question", it:"questione meridionale" },{ en:"brigandage", it:"brigantaggio" }],
+        differentiation: { access:"A before/after 'what changed' chart.", stretch:"Argue whether Italy was truly 'made' in 1861, given the southern question." }
+      },
+      {
+        id: "y8-mayjun", period: "May / June",
+        title: "Consolidation & Core Review",
+        enquiryQuestion: "Across this whole era, was change driven more by revolution or by gradual evolution?",
+        bridge: { concept: "Synthesis", gloss: "Students draw together change, continuity, cause and inference across the Tudor-to-Victorian and exploration-to-unification arcs." },
+        british: {
+          topics: "Theatre rehearsal and comprehensive review; synthesising the year's competencies.",
+          knowledge: "Consolidation of the early-modern British narrative and skills.",
+          skills: "Synthesis of change, continuity, cause and inference.",
+          assessment: "Final course portfolio sign-off."
+        },
+        italian: {
+          topics: "The wars of independence and a united Italy; general review (ripasso).",
+          knowledge: "The three wars of independence; consolidation of the nineteenth-century European picture.",
+          skills: "Synthesis across the year.",
+          assessment: "Final assessment of oral competencies (in itinere)."
+        },
+        crossStream: "A shared closing question — revolution or evolution? — lets students argue across both streams from the Tudors and Columbus to Victoria and a united Italy.",
+        vocab: [{ en:"review", it:"ripasso" },{ en:"independence", it:"indipendenza" },{ en:"evolution", it:"evoluzione" },{ en:"revolution", it:"rivoluzione" }],
+        differentiation: { access:"A guided year-on-a-page organiser.", stretch:"A short argued essay on revolution vs evolution across the era." }
+      }
+    ]
+  },
+  {
+    id: 9, label: "Terza Media", era: "The Modern & Contemporary World",
+    britishArc: "Industrial Revolution & Britain vs France → the Great War → ideologies & power → the Second World War → empire to Commonwealth & the Cold War.",
+    italianArc: "Belle Époque & Giolitti → WWI & the Russian Revolution → Fascism, Stalinism, Nazism → WWII & the Resistance → the Cold War & contemporary Italy.",
+    themes: [
+      {
+        id: "y9-sepoct", period: "September / October",
+        title: "The Launch of the 20th Century & Modern Warfare",
+        enquiryQuestion: "Was the early twentieth century an age of progress, or of mounting danger?",
+        bridge: { concept: "Progress & Tension", gloss: "An industrialising, optimistic Europe is also accumulating the social and political stresses that will explode in 1914." },
+        british: {
+          topics: "The Industrial Revolution: developments, innovations, social and economic impacts. Britain vs France conflicts (Trafalgar & Waterloo context).",
+          knowledge: "Key technological innovations and their social and economic impact; Anglo-French military rivalry.",
+          skills: "Causation; consequence; data analysis.",
+          assessment: "Causation essay; consequences essay; Trafalgar & Waterloo analysis."
+        },
+        italian: {
+          topics: "The Belle Époque; industrial take-off; social tensions; the Giolitti era and universal male suffrage.",
+          knowledge: "The dynamics of the Belle Époque, European industrial take-off, the resulting social tensions, and Giolitti's reforms in Italy.",
+          skills: "Cause & consequence; reading an era's mood.",
+          assessment: "Formative oral and written tasks (in itinere)."
+        },
+        crossStream: "British industrial transformation and the continental Belle Époque are the same modern, industrialising, anxious world — progress and danger braided together on the eve of catastrophe.",
+        vocab: [{ en:"industrialisation", it:"industrializzazione" },{ en:"Belle Époque", it:"Belle Époque" },{ en:"suffrage", it:"suffragio" },{ en:"social tension", it:"tensione sociale" },{ en:"progress", it:"progresso" }],
+        differentiation: { access:"A 'progress vs danger' evidence sorter.", stretch:"Argue whether the era's optimism was justified, using both streams." }
+      },
+      {
+        id: "y9-novdecjan", period: "November / December / January",
+        title: "The Total War Crisis — WWI & Revolution",
+        enquiryQuestion: "How did war on this scale change the world — and topple empires?",
+        bridge: { concept: "Total War & Upheaval", gloss: "Industrial war on a continental scale destroys a generation and breaks empires, birthing revolution." },
+        british: {
+          topics: "The Great War (1914–1919): causes and watershed events; the impact on soldiers and civilians. The Russian Revolution and Lenin.",
+          knowledge: "The overarching causes of WWI; the physical and emotional impact of the war on the front line and at home.",
+          skills: "Empathy grounded in evidence; source analysis.",
+          assessment: "Empathy writing — letters home from the Somme and Passchendaele."
+        },
+        italian: {
+          topics: "Origins of the Great War; the Balkans; alliances; trench warfare; the Italian front from neutralism to the Pact of London; Verdun, Caporetto, Vittorio Veneto.",
+          knowledge: "The causes of the war (Balkan crisis, alliance systems); the Italian neutralist–interventionist debate; the great battles; the collapse of Tsarist Russia.",
+          skills: "Source analysis; causation.",
+          assessment: "Analysis of historical sources (letters and official documents); written tests."
+        },
+        crossStream: "British letters from the Somme and the Italian front at Caporetto are the same war from two trenches — and the Italian stream adds the revolution (Russia 1917) that total war set loose.",
+        vocab: [{ en:"total war", it:"guerra totale" },{ en:"trench", it:"trincea" },{ en:"alliance", it:"alleanza" },{ en:"armistice", it:"armistizio" },{ en:"revolution", it:"rivoluzione" }],
+        differentiation: { access:"Sentence-stemmed source-analysis frames.", stretch:"Compare how the war was experienced and remembered in Britain and Italy." }
+      },
+      {
+        id: "y9-febmar", period: "February / March",
+        title: "Ideologies & Totalitarianism",
+        enquiryQuestion: "Why did so many people turn to dictators in the 1920s and 1930s?",
+        bridge: { concept: "Ideology & Power", gloss: "Post-war disillusion and economic collapse open the door to the totalitarian regimes." },
+        british: {
+          topics: "Ideologies and totalitarianism: the rise and fall of authoritarian and democratic powers in the twentieth century.",
+          knowledge: "The structural rise and fall of major regimes; the influence of competing political ideologies on global history.",
+          skills: "Comparison; interpretation; ideological causation.",
+          assessment: "Ideological causation essay; historical interpretation exercises."
+        },
+        italian: {
+          topics: "The rise of Fascism, the March on Rome, the Matteotti murder, the Lateran Pacts; Stalinism; the 1929 crisis; the rise of Nazism, the Nuremberg Laws, Kristallnacht, the Spanish Civil War.",
+          knowledge: "The post-war crisis and the rise of Fascism; Stalinist totalitarianism; the impact of the 1929 slump; Nazism, antisemitic persecution, and the Spanish Civil War as a political laboratory.",
+          skills: "Causation; comparison of regimes; significance.",
+          assessment: "Structured end-of-unit tests; multimedia presentations."
+        },
+        crossStream: "The British stream supplies the comparative framework of ideologies; the Italian stream provides the case studies in detail — Fascism, Stalinism, Nazism — so students theorise and evidence the totalitarian turn together.",
+        vocab: [{ en:"totalitarianism", it:"totalitarismo" },{ en:"fascism", it:"fascismo" },{ en:"dictatorship", it:"dittatura" },{ en:"propaganda", it:"propaganda" },{ en:"persecution", it:"persecuzione" }],
+        differentiation: { access:"A regime-comparison matrix to complete.", stretch:"Explain why democracy survived in some states and collapsed in others." }
+      },
+      {
+        id: "y9-marapr", period: "March / April",
+        title: "Global Clash — The Second World War",
+        enquiryQuestion: "What turned a European war into a global moral catastrophe?",
+        bridge: { concept: "Cause, Consequence & Morality", gloss: "The second total war forces reckonings with occupation, resistance, genocide and the atomic age." },
+        british: {
+          topics: "The Second World War and global turning points: causes, flashpoints, combat milestones, and outcomes.",
+          knowledge: "The structural causes and major milestones of WWII; its global impact on regions and civilians; the war's political outcomes and legacy.",
+          skills: "Causation; interpretation; evaluating leadership.",
+          assessment: "Churchill historiographical interpretation analysis; empathy writing."
+        },
+        italian: {
+          topics: "The Munich Conference and the outbreak of war; battles, pacts, the armistice of 8 September; the Italian Resistance; the atomic bomb.",
+          knowledge: "The outbreak of the global conflict and its military turning points; the 8 September armistice in Italy; the partisan Resistance; the atomic conclusion at Hiroshima and Nagasaki.",
+          skills: "Chronology; source analysis; moral and historical judgement.",
+          assessment: "Written test on the chronology of the conflict; oral colloquium on the Resistance."
+        },
+        crossStream: "Churchill's war (British stream) and the Italian armistice, Resistance and the atomic ending (Italian stream) are the same global catastrophe — the Italian stream pressing the moral questions of occupation, resistance and the bomb.",
+        vocab: [{ en:"world war", it:"guerra mondiale" },{ en:"resistance", it:"Resistenza" },{ en:"occupation", it:"occupazione" },{ en:"genocide", it:"genocidio" },{ en:"atomic bomb", it:"bomba atomica" }],
+        differentiation: { access:"A guided WWII cause-and-turning-point timeline.", stretch:"Evaluate a contested judgement (e.g. the decision to drop the atomic bomb) using evidence." }
+      },
+      {
+        id: "y9-aprmay", period: "April / May",
+        title: "The Cold War & the Contemporary World",
+        enquiryQuestion: "How did 1945 set the terms of the world we live in now?",
+        bridge: { concept: "Legacy & Active Citizenship", gloss: "A bipolar world, decolonisation and each nation's contemporary settlement shape the present." },
+        british: {
+          topics: "The post-war world: from Empire to Commonwealth; the origins and containment of the Cold War; decolonisation.",
+          knowledge: "Post-war political and economic transformation; the origins, geography and impact of the Cold War; the transformation of empire into Commonwealth.",
+          skills: "Causation; multi-perspective evaluation; mapping change.",
+          assessment: "Post-war geopolitics causation assessment; decolonisation analytical essay."
+        },
+        italian: {
+          topics: "The Cold War, de-Stalinisation, the Cuban crisis and Kennedy; Italy — the referendum and the birth of the Republic, the Years of Lead, and the fight against the Mafia to the present day.",
+          knowledge: "The bipolar order and the great crises; contemporary Italian history from monarchy to republic, through the Years of Lead, to the anti-Mafia movements.",
+          skills: "Synthesis; historical citizenship; evaluating the recent past.",
+          assessment: "Final written tests; assessment of active-citizenship historical competencies."
+        },
+        crossStream: "Britain's imperial retreat and Cold War alignment sit beside Italy's new Republic, Years of Lead and anti-Mafia struggle — two national settlements within one post-1945 world, closing the course on active citizenship.",
+        vocab: [{ en:"Cold War", it:"Guerra Fredda" },{ en:"superpower", it:"superpotenza" },{ en:"decolonisation", it:"decolonizzazione" },{ en:"republic", it:"repubblica" },{ en:"citizenship", it:"cittadinanza" }],
+        differentiation: { access:"A labelled bipolar-world map with prompts.", stretch:"Trace one contemporary issue (a border, an institution, a movement) back to its post-1945 roots." }
+      },
+      {
+        id: "y9-jun", period: "June",
+        title: "Consolidation & Core Review",
+        enquiryQuestion: "Looking back across the twentieth century, what is the most important lesson history asks us to carry forward?",
+        bridge: { concept: "Synthesis & Significance", gloss: "Students consolidate causation, source interpretation and multi-perspective evaluation across the whole modern arc." },
+        british: {
+          topics: "Theatre rehearsal and Year 9 key-skill review; retrospective evaluation.",
+          knowledge: "Consolidation of the twentieth-century British and imperial narrative.",
+          skills: "Causation; source interpretation; multi-perspective evaluation.",
+          assessment: "Final portfolio sign-off and retrospective evaluation."
+        },
+        italian: {
+          topics: "General review (ripasso) and preparation for the transition to upper school.",
+          knowledge: "Consolidation of contemporary history.",
+          skills: "Synthesis; historical judgement.",
+          assessment: "Final overall assessment of historical competencies."
+        },
+        crossStream: "A shared reflective close lets students argue, across both streams, what the century's wars, ideologies and settlements should teach the citizens they are becoming.",
+        vocab: [{ en:"review", it:"ripasso" },{ en:"significance", it:"significatività" },{ en:"citizenship", it:"cittadinanza" },{ en:"interpretation", it:"interpretazione" }],
+        differentiation: { access:"A century-on-a-page organiser.", stretch:"A short argued reflection connecting a twentieth-century lesson to the present." }
+      }
+    ]
+  }
+]};
+
+// ─── STAFF ────────────────────────────────────────────────────────────────────
+const STAFF = [
+  { id:"t1", name:"Eleanor Whitfield", stream:"british", years:[7,8], email:"e.whitfield@acornschool.it", initials:"EW" },
+  { id:"t2", name:"James Okoro",        stream:"british", years:[9],    email:"j.okoro@acornschool.it",    initials:"JO" },
+  { id:"t3", name:"Chiara Lombardi",    stream:"italian", years:[7,9], email:"c.lombardi@acornschool.it", initials:"CL" },
+  { id:"t4", name:"Marco Ferraro",      stream:"italian", years:[8],    email:"m.ferraro@acornschool.it",  initials:"MF" },
+];
+
+// ─── COORDINATION SEED ────────────────────────────────────────────────────────
+const COORDINATION_SEED = {
+  assignments: {
+    "7-british":"t1","7-italian":"t3",
+    "8-british":"t1","8-italian":"t4",
+    "9-british":"t2","9-italian":"t3",
+  },
+  themeStatus: {
+    "y7-sep-british":      { status:"complete",     pacing:"on-track" },
+    "y7-sep-italian":      { status:"complete",     pacing:"on-track" },
+    "y7-oct-british":      { status:"complete",     pacing:"on-track" },
+    "y7-oct-italian":      { status:"complete",     pacing:"on-track" },
+    "y7-nov-british":      { status:"teaching",     pacing:"on-track" },
+    "y7-nov-italian":      { status:"planning",     pacing:"behind"   },
+    "y7-decjan-british":   { status:"not-started",  pacing:"on-track" },
+    "y7-decjan-italian":   { status:"not-started",  pacing:"on-track" },
+    "y8-sep-british":      { status:"complete",     pacing:"on-track" },
+    "y8-sep-italian":      { status:"complete",     pacing:"on-track" },
+    "y8-oct-british":      { status:"complete",     pacing:"on-track" },
+    "y8-oct-italian":      { status:"complete",     pacing:"on-track" },
+    "y8-nov-british":      { status:"ready",        pacing:"on-track" },
+    "y8-nov-italian":      { status:"ready",        pacing:"on-track" },
+    "y8-dec-british":      { status:"not-started",  pacing:"on-track" },
+    "y8-dec-italian":      { status:"not-started",  pacing:"on-track" },
+    "y9-sepoct-british":   { status:"complete",     pacing:"on-track" },
+    "y9-sepoct-italian":   { status:"complete",     pacing:"on-track" },
+    "y9-novdecjan-british":{ status:"planning",     pacing:"on-track" },
+    "y9-novdecjan-italian":{ status:"planning",     pacing:"on-track" },
+  },
+  sync: {
+    "y7-nov": {
+      aligned: false,
+      reason: "Italian stream behind",
+      notes: [{ author:"Coordinator", ts:"12 Nov 09:41", text:"Chiara — can we anchor on the feudal pyramid / Islamic expansion parallel before half-term? Eleanor is already deep into the Domesday Book. Let's connect the 'how do you hold power?' question explicitly this week." }]
+    },
+    "y8-nov": {
+      aligned: true,
+      reason: null,
+      notes: [{ author:"Coordinator", ts:"10 Nov 14:20", text:"Both streams well-placed on the absolutism comparison — Marco's Louis XIV materials and Eleanor's Charles II sources are ready to connect. Good to go." }]
+    },
+    "y9-novdecjan": { aligned: true, reason: null, notes: [] },
+  }
+};
+
+// ─── STATUS HELPERS ───────────────────────────────────────────────────────────
+const S_CYCLE = ["not-started","planning","ready","teaching","complete"];
+const S_LABEL = { "not-started":"Not Started", planning:"Planning", ready:"Ready", teaching:"Teaching", complete:"Complete" };
+const S_COLOR = {
+  "not-started": "bg-gray-200 text-gray-500",
+  planning:      "bg-amber-100 text-amber-800 border border-amber-300",
+  ready:         "bg-blue-100 text-blue-700 border border-blue-300",
+  teaching:      "bg-gold/90 text-white",
+  complete:      "bg-navy text-white",
+};
+
+function nextS(s) { return S_CYCLE[(S_CYCLE.indexOf(s)+1)%S_CYCLE.length]; }
+
+function StatusPill({ status, onClick }) {
+  return (
+    <button onClick={onClick} title="Click to cycle status"
+      className={`text-xs px-2 py-0.5 rounded small-caps cursor-pointer transition-all ${S_COLOR[status]}`}>
+      {S_LABEL[status]}
+    </button>
+  );
+}
+
+function AlignBadge({ aligned }) {
+  return aligned
+    ? <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-gold text-white small-caps">❧ Aligned</span>
+    : <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber text-white small-caps">⚠ Needs Attention</span>;
+}
+
+function PacingBadge({ pacing }) {
+  return pacing === "behind"
+    ? <span className="text-xs px-1.5 py-0.5 rounded bg-amber/20 text-amber border border-amber/40 small-caps">Behind</span>
+    : <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 small-caps">On Track</span>;
+}
+
+// month-in-period matching
+function periodIncludes(period, month) {
+  return period.split(" / ").includes(month);
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App() {
+  const [view, setView]           = useState("dashboard");
+  const [month, setMonth]         = useState("November");
+  const [yFilter, setYFilter]     = useState("all");
+  const [mapYear, setMapYear]     = useState(7);
+  const [syncYear, setSyncYear]   = useState(7);
+  const [syncKey, setSyncKey]     = useState("y7-nov");
+  const [detailTheme, setDetail]  = useState(null);
+  const [coord, setCoord]         = useState(COORDINATION_SEED);
+  const [noteInputs, setNoteInputs] = useState({});
+
+  const cycleStatus = k => setCoord(c => ({
+    ...c, themeStatus: { ...c.themeStatus, [k]: { ...c.themeStatus[k], status: nextS(c.themeStatus[k]?.status||"not-started") } }
+  }));
+  const togglePacing = k => setCoord(c => ({
+    ...c, themeStatus: { ...c.themeStatus, [k]: { ...c.themeStatus[k], pacing: c.themeStatus[k]?.pacing==="behind"?"on-track":"behind" } }
+  }));
+  const toggleAlign = sk => setCoord(c => ({
+    ...c, sync: { ...c.sync, [sk]: { ...c.sync[sk], aligned: !c.sync[sk]?.aligned, reason: c.sync[sk]?.aligned ? "Streams on different topics" : null } }
+  }));
+  const setReason = (sk, r) => setCoord(c => ({
+    ...c, sync: { ...c.sync, [sk]: { ...c.sync[sk], reason: r } }
+  }));
+  const addNote = (sk, text) => {
+    if (!text.trim()) return;
+    const now = new Date();
+    const ts = `${now.getDate()} ${now.toLocaleString("en",{month:"short"})} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+    setCoord(c => ({ ...c, sync: { ...c.sync, [sk]: { ...c.sync[sk], notes: [...(c.sync[sk]?.notes||[]), { author:"Coordinator", ts, text }] } } }));
+  };
+  const updateAssign = (k, v) => setCoord(c => ({ ...c, assignments: { ...c.assignments, [k]: v } }));
+
+  const openSync = (yearId, sk) => { setSyncYear(yearId); setSyncKey(sk); setView("syncboard"); };
+
+  const MONTHS = ["September","October","November","December","January","February","March","April","May","June"];
+  const ctx = { coord, cycleStatus, togglePacing, toggleAlign, setReason, addNote, noteInputs, setNoteInputs, openSync, setDetail, updateAssign };
+
+  return (
+    <div className="flex h-screen overflow-hidden" style={{background:"#F4ECD8"}}>
+      {/* Sidebar */}
+      <aside className="w-52 flex-shrink-0 flex flex-col border-r border-white/10" style={{background:"#1B2A4A"}}>
+        <div className="p-4 border-b border-white/10">
+          <div className="text-xs small-caps text-gold/70 tracking-widest mb-0.5">Acorn International</div>
+          <div className="font-display text-white text-xl font-semibold">Concordance</div>
+          <div className="text-xs text-white/40 mt-0.5">Integrated History</div>
+        </div>
+        <nav className="flex-1 p-3 space-y-0.5">
+          {[["dashboard","Dashboard","◈"],["yearmap","Year Map","▦"],["syncboard","Sync Board","⬡"],["staff","Staff & Assignments","⊙"],["assessments","Assessments","◷"]].map(([v,label,icon])=>(
+            <button key={v} onClick={()=>setView(v)}
+              className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${view===v?"bg-gold text-navy font-semibold":"text-white/70 hover:bg-white/10 hover:text-white"}`}>
+              <span className="opacity-60">{icon}</span>{label}
+            </button>
+          ))}
+        </nav>
+        <div className="p-3 border-t border-white/10 space-y-2">
+          <div>
+            <div className="text-xs small-caps text-white/40 mb-1">Current Month</div>
+            <select value={month} onChange={e=>setMonth(e.target.value)} className="w-full text-xs">
+              {MONTHS.map(m=><option key={m}>{m}</option>)}
+            </select>
+          </div>
+          <div>
+            <div className="text-xs small-caps text-white/40 mb-1">Year Group</div>
+            <select value={yFilter} onChange={e=>setYFilter(e.target.value==="all"?"all":parseInt(e.target.value))} className="w-full text-xs">
+              <option value="all">All Years</option>
+              <option value={7}>Year 7</option>
+              <option value={8}>Year 8</option>
+              <option value={9}>Year 9</option>
+            </select>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 overflow-y-auto">
+        {view==="dashboard"   && <Dashboard {...ctx} month={month} yFilter={yFilter} />}
+        {view==="yearmap"     && <YearMap {...ctx} mapYear={mapYear} setMapYear={setMapYear} />}
+        {view==="syncboard"   && <SyncBoard {...ctx} syncYear={syncYear} setSyncYear={setSyncYear} syncKey={syncKey} setSyncKey={setSyncKey} />}
+        {view==="staff"       && <StaffView {...ctx} />}
+        {view==="assessments" && <AssessmentsView {...ctx} yFilter={yFilter} />}
+      </main>
+
+      {/* Theme detail slide-over */}
+      {detailTheme && <ThemeDetail {...detailTheme} onClose={()=>setDetail(null)} />}
+    </div>
+  );
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function Dashboard({ coord, month, yFilter, cycleStatus, openSync }) {
+  const rows = CURRICULUM.years
+    .filter(y => yFilter==="all" || y.id===yFilter)
+    .map(y => ({ y, t: y.themes.find(t => periodIncludes(t.period, month)) }))
+    .filter(x=>x.t);
+
+  const makeSK = (yearId, t) => `y${yearId}-${t.id.split('-').slice(1).join('-')}`;
+
+  const needsSync = rows.filter(({y,t})=>!(coord.sync[makeSK(y.id,t)]?.aligned??true)).length;
+  const assessN   = rows.reduce((n,{t})=>n+(t.british.assessment?1:0)+(t.italian.assessment?1:0),0);
+
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="font-display text-3xl text-navy font-semibold mb-0.5">Dashboard</h1>
+      <div className="text-sm small-caps text-navy/50 mb-4">{month} — Coordinator Overview</div>
+
+      {/* Summary strip */}
+      <div className="flex flex-wrap gap-4 text-sm bg-parchment-light border border-navy/10 rounded-lg px-5 py-3 mb-6">
+        <span><strong>{rows.length}</strong> year-groups</span>
+        <span className="text-navy/30">·</span>
+        <span><strong>{rows.length*2}</strong> streams</span>
+        {needsSync>0 && <><span className="text-navy/30">·</span><span className="text-amber font-semibold">⚠ {needsSync} needs sync</span></>}
+        <span className="text-navy/30">·</span>
+        <span><strong>{assessN}</strong> assessments this month</span>
+      </div>
+
+      {rows.length===0 && <div className="text-center py-20 text-navy/40">No themes found for {month}.</div>}
+
+      <div className="space-y-4">
+        {rows.map(({y,t})=>{
+          const sk = makeSK(y.id, t);
+          const sync = coord.sync[sk];
+          const aligned = sync?.aligned??true;
+          const bK = `${t.id}-british`, iK = `${t.id}-italian`;
+          const bS = coord.themeStatus[bK]||{status:"not-started",pacing:"on-track"};
+          const iS = coord.themeStatus[iK]||{status:"not-started",pacing:"on-track"};
+          const bT = STAFF.find(s=>s.id===coord.assignments[`${y.id}-british`]);
+          const iT = STAFF.find(s=>s.id===coord.assignments[`${y.id}-italian`]);
+          return (
+            <div key={y.id} onClick={()=>openSync(y.id,sk)}
+              className={`rounded-xl border-2 overflow-hidden cursor-pointer hover:shadow-md transition-all ${aligned?"border-gold/30":"border-amber/60"}`}
+              style={{background:"#FAF6EE"}}>
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-3 border-b border-navy/10"
+                style={{background:aligned?"rgba(184,137,58,0.08)":"rgba(199,125,58,0.10)"}}>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white" style={{background:"#1B2A4A"}}>
+                    {y.id}
+                  </div>
+                  <div>
+                    <div className="text-xs small-caps text-navy/40">Year {y.id} · {y.label} · {t.period}</div>
+                    <div className="font-display text-navy font-semibold text-lg leading-tight">{t.title}</div>
+                  </div>
+                </div>
+                <AlignBadge aligned={aligned} />
+              </div>
+              <div className="px-5 py-4">
+                <p className="font-display italic text-navy/80 text-base mb-3">"{t.enquiryQuestion}"</p>
+                <span className="text-xs px-2 py-0.5 rounded-full border border-gold/50 text-gold small-caps">{t.bridge.concept}</span>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div className="stream-b pl-3">
+                    <div className="text-xs small-caps text-navy/50 mb-1">British Stream</div>
+                    <div className="text-xs text-navy/60 mb-2">{bT?.name||"—"}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <StatusPill status={bS.status} onClick={e=>{e.stopPropagation();cycleStatus(bK);}} />
+                      <PacingBadge pacing={bS.pacing} />
+                    </div>
+                  </div>
+                  <div className="stream-i pl-3">
+                    <div className="text-xs small-caps text-gold/80 mb-1">Italian Stream</div>
+                    <div className="text-xs text-navy/60 mb-2">{iT?.name||"—"}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <StatusPill status={iS.status} onClick={e=>{e.stopPropagation();cycleStatus(iK);}} />
+                      <PacingBadge pacing={iS.pacing} />
+                    </div>
+                  </div>
+                </div>
+                {!aligned && sync?.reason && (
+                  <div className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-1.5">⚠ {sync.reason}</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── YEAR MAP ─────────────────────────────────────────────────────────────────
+function YearMap({ coord, mapYear, setMapYear, setDetail, cycleStatus }) {
+  const y = CURRICULUM.years.find(yr=>yr.id===mapYear);
+  if (!y) return null;
+  const makeSK = t => `y${mapYear}-${t.id.split('-').slice(1).join('-')}`;
+
+  return (
+    <div className="p-6">
+      <div className="flex items-end justify-between mb-3">
+        <div>
+          <h1 className="font-display text-3xl text-navy font-semibold">Year Map</h1>
+          <p className="text-sm text-navy/50 small-caps">{y.era}</p>
+        </div>
+        <div className="flex gap-1">
+          {[7,8,9].map(n=>(
+            <button key={n} onClick={()=>setMapYear(n)}
+              className={`px-4 py-1.5 rounded small-caps text-sm transition-all ${mapYear===n?"bg-navy text-parchment":"bg-navy/10 text-navy hover:bg-navy/20"}`}>
+              Year {n}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+        <div className="stream-b pl-3 text-navy/70"><span className="small-caps text-xs text-navy/40 block">British Arc</span>{y.britishArc}</div>
+        <div className="stream-i pl-3 text-navy/70"><span className="small-caps text-xs text-gold/60 block">Italian Arc</span>{y.italianArc}</div>
+      </div>
+
+      <div className="space-y-2">
+        {y.themes.map(t=>{
+          const sk = makeSK(t);
+          const aligned = coord.sync[sk]?.aligned ?? true;
+          const bS = coord.themeStatus[`${t.id}-british`]||{status:"not-started"};
+          const iS = coord.themeStatus[`${t.id}-italian`]||{status:"not-started"};
+          return (
+            <div key={t.id} onClick={()=>setDetail({theme:t, yearId:mapYear})}
+              className="rounded-lg border border-navy/10 overflow-hidden cursor-pointer hover:shadow-sm transition-all" style={{background:"#FAF6EE"}}>
+              {/* Bridge band */}
+              <div className="flex items-center gap-3 px-4 py-2.5 border-b border-navy/10" style={{background:"rgba(27,42,74,0.04)"}}>
+                <span className="text-xs small-caps text-navy/40 w-32 flex-shrink-0">{t.period}</span>
+                <p className="flex-1 font-display italic text-navy/75 text-sm">"{t.enquiryQuestion}"</p>
+                <span className="text-xs px-2 py-0.5 rounded-full border border-gold/50 text-gold small-caps flex-shrink-0">{t.bridge.concept}</span>
+                {!aligned && <span className="text-amber text-xs flex-shrink-0">⚠</span>}
+              </div>
+              <div className="grid grid-cols-2">
+                <div className="p-3 border-r border-navy/10 stream-b pl-4">
+                  <div className="text-xs small-caps text-navy/40 mb-1">British</div>
+                  <p className="text-xs text-navy/80 mb-2 line-clamp-2">{t.british.topics}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <StatusPill status={bS.status} onClick={e=>{e.stopPropagation();cycleStatus(`${t.id}-british`);}} />
+                  </div>
+                </div>
+                <div className="p-3 stream-i pl-4">
+                  <div className="text-xs small-caps text-gold/60 mb-1">Italian</div>
+                  <p className="text-xs text-navy/80 mb-2 line-clamp-2">{t.italian.topics}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <StatusPill status={iS.status} onClick={e=>{e.stopPropagation();cycleStatus(`${t.id}-italian`);}} />
+                  </div>
+                </div>
+              </div>
+              <div className="px-4 py-2 border-t border-navy/10 flex items-start gap-2" style={{background:"rgba(184,137,58,0.05)"}}>
+                <span className="text-gold flex-shrink-0">❧</span>
+                <p className="text-xs italic text-navy/60">{t.crossStream}</p>
+              </div>
+              <div className="px-4 pb-2 flex flex-wrap">
+                {t.vocab.map((v,i)=><span key={i} className="vocab-chip">{v.en} / {v.it}</span>)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── THEME DETAIL ─────────────────────────────────────────────────────────────
+function ThemeDetail({ theme: t, yearId, onClose }) {
+  const y = CURRICULUM.years.find(yr=>yr.id===yearId);
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
+      <div className="slide-over w-full max-w-2xl bg-parchment h-full overflow-y-auto shadow-2xl border-l border-navy/20" onClick={e=>e.stopPropagation()}>
+        {/* Header */}
+        <div className="sticky top-0 z-10 px-7 py-5 border-b border-white/10" style={{background:"#1B2A4A"}}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-xs small-caps text-white/40 mb-1">Year {yearId} · {y?.label} · {t.period}</div>
+              <h2 className="font-display text-white text-2xl font-semibold leading-tight">{t.title}</h2>
+              <p className="font-display italic text-gold text-base mt-1">"{t.enquiryQuestion}"</p>
+            </div>
+            <button onClick={onClose} className="text-white/50 hover:text-white text-xl flex-shrink-0 mt-1">✕</button>
+          </div>
+          <div className="mt-3 flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0" style={{background:"#B8893A"}}>
+              {t.bridge.concept.slice(0,2)}
+            </div>
+            <div>
+              <div className="text-xs small-caps text-gold">{t.bridge.concept}</div>
+              <div className="text-xs text-white/60 mt-0.5">{t.bridge.gloss}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-7 space-y-6">
+          {/* Alignment matrix */}
+          <div className="grid grid-cols-2 gap-4">
+            {[["british","British Stream","stream-b","text-navy/50"],
+              ["italian","Italian Stream","stream-i","text-gold/70"]].map(([s,label,cls,lc])=>(
+              <div key={s} className={`pl-3 ${cls}`}>
+                <div className={`text-xs small-caps mb-3 ${lc}`}>{label}</div>
+                {[["Topics","topics"],["Knowledge & Focus","knowledge"],["Disciplinary Skills","skills"],["Key Assessment","assessment"]].map(([title,f])=>(
+                  <div key={f} className="mb-3">
+                    <div className="text-xs small-caps text-navy/40 mb-0.5">{title}</div>
+                    <p className="text-sm text-navy/80 leading-relaxed">{t[s][f]}</p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Cross-stream */}
+          <div className="rounded-lg p-4 border border-gold/30" style={{background:"rgba(184,137,58,0.05)"}}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-gold text-lg">❧</span>
+              <span className="text-xs small-caps text-gold">Cross-Stream Connection</span>
+            </div>
+            <p className="italic text-navy/80 text-sm leading-relaxed">{t.crossStream}</p>
+          </div>
+
+          {/* Vocab */}
+          <div>
+            <div className="text-xs small-caps text-navy/50 mb-2">Key Vocabulary</div>
+            <div className="flex flex-wrap gap-1.5">
+              {t.vocab.map((v,i)=>(
+                <span key={i} className="inline-flex items-center gap-1.5 bg-navy/5 border border-navy/15 rounded px-3 py-1 text-sm">
+                  <span className="text-navy font-medium">{v.en}</span>
+                  <span className="text-navy/30">/</span>
+                  <span className="text-gold/90 italic">{v.it}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Differentiation */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-lg p-3 border border-navy/10" style={{background:"#FAF6EE"}}>
+              <div className="text-xs small-caps text-navy/50 mb-1.5">Access Support</div>
+              <p className="text-sm text-navy/70 leading-relaxed">{t.differentiation.access}</p>
+            </div>
+            <div className="rounded-lg p-3 border border-gold/20" style={{background:"rgba(184,137,58,0.04)"}}>
+              <div className="text-xs small-caps text-gold/80 mb-1.5">Stretch & Challenge</div>
+              <p className="text-sm text-navy/70 leading-relaxed">{t.differentiation.stretch}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SYNC BOARD ───────────────────────────────────────────────────────────────
+function SyncBoard({ coord, syncYear, setSyncYear, syncKey, setSyncKey, cycleStatus, togglePacing, toggleAlign, setReason, addNote, noteInputs, setNoteInputs, setDetail }) {
+  const y = CURRICULUM.years.find(yr=>yr.id===syncYear);
+  const theme = y?.themes.find(t=>`y${syncYear}-${t.id.split('-').slice(1).join('-')}`===syncKey) || y?.themes[0];
+  const sk = theme ? `y${syncYear}-${theme.id.split('-').slice(1).join('-')}` : null;
+  const sync = sk ? (coord.sync[sk]||{aligned:true,reason:null,notes:[]}) : null;
+  const bK = theme ? `${theme.id}-british` : null;
+  const iK = theme ? `${theme.id}-italian` : null;
+  const bS = bK ? (coord.themeStatus[bK]||{status:"not-started",pacing:"on-track"}) : {};
+  const iS = iK ? (coord.themeStatus[iK]||{status:"not-started",pacing:"on-track"}) : {};
+  const bT = STAFF.find(s=>s.id===coord.assignments[`${syncYear}-british`]);
+  const iT = STAFF.find(s=>s.id===coord.assignments[`${syncYear}-italian`]);
+
+  const REASONS = ["Streams on different topics","Italian stream behind","British stream behind","Assessment clash","Resources not ready"];
+
+  const jumpToYear = (yId) => {
+    setSyncYear(yId);
+    const yr = CURRICULUM.years.find(y=>y.id===yId);
+    if (yr) {
+      const t = yr.themes.find(th=>periodIncludes(th.period,"November"))||yr.themes[0];
+      setSyncKey(`y${yId}-${t.id.split('-').slice(1).join('-')}`);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto">
+      <div className="flex items-end justify-between mb-4">
+        <div>
+          <h1 className="font-display text-3xl text-navy font-semibold">Sync Board</h1>
+          <p className="text-sm small-caps text-navy/50">Integration Contract Monitor</p>
+        </div>
+        <div className="flex gap-1">
+          {[7,8,9].map(n=>(
+            <button key={n} onClick={()=>jumpToYear(n)}
+              className={`px-3 py-1.5 rounded small-caps text-sm transition-all ${syncYear===n?"bg-navy text-parchment":"bg-navy/10 text-navy hover:bg-navy/20"}`}>
+              Year {n}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Month strip */}
+      {y && (
+        <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
+          {y.themes.map(t=>{
+            const tsk = `y${syncYear}-${t.id.split('-').slice(1).join('-')}`;
+            const al  = coord.sync[tsk]?.aligned ?? true;
+            const isA = tsk===sk;
+            return (
+              <button key={t.id} onClick={()=>setSyncKey(tsk)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded text-xs small-caps transition-all border ${
+                  isA?"border-navy bg-navy text-white":
+                  al?"border-gold/30 bg-gold/10 text-navy hover:bg-gold/20":"border-amber/40 bg-amber/10 text-amber-800 hover:bg-amber/20"
+                }`}>
+                {t.period}{!al&&" ⚠"}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {theme && sync && (
+        <>
+          {/* Contract banner */}
+          <div className="rounded-xl overflow-hidden mb-5 border border-navy/20" style={{background:"#1B2A4A"}}>
+            <div className="px-6 py-5">
+              <div className="text-xs small-caps text-white/40 tracking-widest mb-2">{theme.period} · Integration Contract</div>
+              <p className="font-display italic text-white text-xl leading-snug mb-4">"{theme.enquiryQuestion}"</p>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0" style={{background:"#B8893A"}}>
+                  {theme.bridge.concept.slice(0,2)}
+                </div>
+                <div>
+                  <div className="text-xs small-caps text-gold">{theme.bridge.concept}</div>
+                  <div className="text-xs text-white/60 mt-0.5">{theme.bridge.gloss}</div>
+                </div>
+              </div>
+            </div>
+            <div className="border-t border-white/10 px-6 py-3 flex items-start gap-2" style={{background:"rgba(255,255,255,0.04)"}}>
+              <span className="text-gold flex-shrink-0">❧</span>
+              <p className="text-sm italic text-white/70">{theme.crossStream}</p>
+            </div>
+          </div>
+
+          {/* Stream panels */}
+          <div className="grid grid-cols-[1fr_56px_1fr] mb-5">
+            {/* British */}
+            <div className="rounded-l-xl border border-r-0 border-navy/20 overflow-hidden" style={{background:"#FAF6EE"}}>
+              <div className="px-4 py-3 border-b border-navy/10 border-l-4 border-l-navy flex items-center justify-between">
+                <div>
+                  <div className="text-xs small-caps text-navy/50">British Stream</div>
+                  <div className="text-sm font-semibold text-navy">{bT?.name||"Unassigned"}</div>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <StatusPill status={bS.status} onClick={()=>cycleStatus(bK)} />
+                  <button onClick={()=>togglePacing(bK)}><PacingBadge pacing={bS.pacing} /></button>
+                </div>
+              </div>
+              <div className="p-4 space-y-3 text-sm">
+                <div><div className="text-xs small-caps text-navy/40 mb-0.5">Topics</div><p className="text-navy/80 leading-relaxed">{theme.british.topics}</p></div>
+                <div><div className="text-xs small-caps text-navy/40 mb-0.5">Key Assessment</div><p className="text-navy/70 italic">{theme.british.assessment}</p></div>
+              </div>
+            </div>
+
+            {/* Seam */}
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="text-gold text-2xl">❧</div>
+              <button onClick={()=>toggleAlign(sk)}
+                className={`w-9 h-9 rounded-full border-2 flex items-center justify-center text-base transition-all ${sync.aligned?"border-gold bg-gold/20 text-gold":"border-amber bg-amber/20 text-amber"}`}
+                title="Toggle alignment">
+                {sync.aligned?"✓":"⚠"}
+              </button>
+              <div className="text-gold text-2xl" style={{transform:"scaleY(-1)"}}>❧</div>
+            </div>
+
+            {/* Italian */}
+            <div className="rounded-r-xl border border-l-0 border-navy/20 overflow-hidden" style={{background:"#FAF6EE"}}>
+              <div className="px-4 py-3 border-b border-gold/20 border-l-4 border-l-gold flex items-center justify-between">
+                <div>
+                  <div className="text-xs small-caps text-gold/70">Italian Stream</div>
+                  <div className="text-sm font-semibold text-navy">{iT?.name||"Unassigned"}</div>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <StatusPill status={iS.status} onClick={()=>cycleStatus(iK)} />
+                  <button onClick={()=>togglePacing(iK)}><PacingBadge pacing={iS.pacing} /></button>
+                </div>
+              </div>
+              <div className="p-4 space-y-3 text-sm">
+                <div><div className="text-xs small-caps text-gold/60 mb-0.5">Topics</div><p className="text-navy/80 leading-relaxed">{theme.italian.topics}</p></div>
+                <div><div className="text-xs small-caps text-gold/60 mb-0.5">Key Assessment</div><p className="text-navy/70 italic">{theme.italian.assessment}</p></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Reason picker */}
+          {!sync.aligned && (
+            <div className="mb-4 rounded-lg border border-amber/30 p-4" style={{background:"rgba(199,125,58,0.06)"}}>
+              <div className="text-xs small-caps text-amber mb-2">Reason for Sync Issue</div>
+              <div className="flex flex-wrap gap-2">
+                {REASONS.map(r=>(
+                  <button key={r} onClick={()=>setReason(sk,r)}
+                    className={`text-xs px-3 py-1 rounded-full border transition-all ${sync.reason===r?"bg-amber text-white border-amber":"border-amber/40 text-amber-800 hover:bg-amber/10"}`}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+              {sync.reason && <p className="text-xs text-amber-800 mt-2">Selected: <strong>{sync.reason}</strong></p>}
+            </div>
+          )}
+
+          {/* Notes */}
+          <div className="rounded-xl border border-navy/15 overflow-hidden" style={{background:"#FAF6EE"}}>
+            <div className="px-5 py-3 border-b border-navy/10 flex items-center justify-between">
+              <span className="text-xs small-caps text-navy/50">Shared Coordination Notes</span>
+              <span className="text-xs text-navy/30">Both teachers see this</span>
+            </div>
+            <div className="p-4 space-y-3 max-h-44 overflow-y-auto">
+              {(sync.notes||[]).map((n,i)=>(
+                <div key={i}>
+                  <span className="text-sm font-semibold text-navy">{n.author}</span>
+                  <span className="text-xs text-navy/40 ml-2">{n.ts}</span>
+                  <p className="text-sm text-navy/80 mt-0.5 leading-relaxed">{n.text}</p>
+                </div>
+              ))}
+              {!sync.notes?.length && <p className="text-navy/30 text-sm italic">No notes yet.</p>}
+            </div>
+            <div className="border-t border-navy/10 p-3 flex gap-2">
+              <input value={noteInputs[sk]||""} onChange={e=>setNoteInputs(n=>({...n,[sk]:e.target.value}))}
+                onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){addNote(sk,noteInputs[sk]||"");setNoteInputs(n=>({...n,[sk]:""}));}}}
+                placeholder="Add a note… (Enter to send)"
+                className="flex-1 text-sm bg-white border border-navy/20 rounded px-3 py-1.5 focus:outline-none focus:border-gold/60"
+              />
+              <button onClick={()=>{addNote(sk,noteInputs[sk]||"");setNoteInputs(n=>({...n,[sk]:""}));}}
+                className="px-4 py-1.5 bg-navy text-white text-sm rounded hover:bg-navy-light transition-all">
+                Send
+              </button>
+            </div>
+          </div>
+          <div className="mt-2 text-right">
+            <button onClick={()=>setDetail({theme,yearId:syncYear})}
+              className="text-xs text-gold underline hover:text-gold/70">
+              View full theme detail →
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── STAFF & ASSIGNMENTS ──────────────────────────────────────────────────────
+function StaffView({ coord, updateAssign }) {
+  return (
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="font-display text-3xl text-navy font-semibold mb-0.5">Staff & Assignments</h1>
+      <p className="text-sm small-caps text-navy/50 mb-6">Integrated History Team</p>
+
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        {STAFF.map(t=>(
+          <div key={t.id} className="rounded-xl border border-navy/15 p-5" style={{background:"#FAF6EE"}}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold text-white"
+                style={{background:t.stream==="british"?"#1B2A4A":"#B8893A"}}>
+                {t.initials}
+              </div>
+              <div>
+                <div className="font-semibold text-navy">{t.name}</div>
+                <div className="text-xs text-navy/50">{t.email}</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <span className={`text-xs px-2 py-0.5 rounded-full small-caps text-white ${t.stream==="british"?"bg-navy":"bg-gold"}`}>
+                {t.stream==="british"?"British Stream":"Italian Stream"}
+              </span>
+              {t.years.map(n=><span key={n} className="text-xs px-2 py-0.5 rounded-full bg-navy/10 text-navy">Year {n}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="font-display text-xl text-navy font-semibold mb-3">Assignment Matrix</h2>
+      <div className="rounded-xl border border-navy/15 overflow-hidden" style={{background:"#FAF6EE"}}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-navy/10" style={{background:"rgba(27,42,74,0.06)"}}>
+              <th className="text-left px-4 py-2.5 text-xs small-caps text-navy/50">Year</th>
+              <th className="text-left px-4 py-2.5 text-xs small-caps text-navy/50">British Stream</th>
+              <th className="text-left px-4 py-2.5 text-xs small-caps text-gold/70">Italian Stream</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[7,8,9].map((n,i)=>{
+              const yr = CURRICULUM.years.find(y=>y.id===n);
+              return (
+                <tr key={n} className={`border-b border-navy/5 ${i%2===1?"bg-navy/[0.02]":""}`}>
+                  <td className="px-4 py-3 font-semibold text-navy">Year {n} <span className="text-navy/40 font-normal text-xs">({yr?.label})</span></td>
+                  <td className="px-4 py-3">
+                    <select value={coord.assignments[`${n}-british`]||""} onChange={e=>updateAssign(`${n}-british`,e.target.value)}>
+                      <option value="">— Unassigned —</option>
+                      {STAFF.filter(s=>s.stream==="british").map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3">
+                    <select value={coord.assignments[`${n}-italian`]||""} onChange={e=>updateAssign(`${n}-italian`,e.target.value)}>
+                      <option value="">— Unassigned —</option>
+                      {STAFF.filter(s=>s.stream==="italian").map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-navy/40 mt-2 italic">Assignment changes persist for this session only — persistence requires the real-build database layer.</p>
+    </div>
+  );
+}
+
+// ─── ASSESSMENTS ──────────────────────────────────────────────────────────────
+function AssessmentsView({ coord, yFilter }) {
+  const [sf, setSf] = useState("all");
+  const MO = ["September","October","November","December","January","February","March","April","May","June"];
+
+  const firstMonth = period => {
+    const parts = period.split(" / ");
+    return MO.indexOf(parts[0]);
+  };
+
+  const items = [];
+  CURRICULUM.years.forEach(y=>{
+    if (yFilter!=="all" && y.id!==yFilter) return;
+    y.themes.forEach(t=>{
+      if (sf!=="italian" && t.british.assessment)
+        items.push({ mi:firstMonth(t.period), period:t.period, yId:y.id, yLabel:y.label, stream:"british", title:t.british.assessment, sk:`${t.id}-british`, themeTitle:t.title });
+      if (sf!=="british" && t.italian.assessment)
+        items.push({ mi:firstMonth(t.period), period:t.period, yId:y.id, yLabel:y.label, stream:"italian", title:t.italian.assessment, sk:`${t.id}-italian`, themeTitle:t.title });
+    });
+  });
+  items.sort((a,b)=>a.mi-b.mi||a.yId-b.yId);
+
+  return (
+    <div className="p-8 max-w-3xl mx-auto">
+      <h1 className="font-display text-3xl text-navy font-semibold mb-0.5">Assessments</h1>
+      <p className="text-sm small-caps text-navy/50 mb-4">All key assessments — derived from curriculum</p>
+      <div className="flex items-center gap-2 mb-6">
+        <span className="text-xs small-caps text-navy/50">Stream:</span>
+        {[["all","All Streams"],["british","British"],["italian","Italian"]].map(([v,l])=>(
+          <button key={v} onClick={()=>setSf(v)}
+            className={`text-xs px-3 py-1 rounded small-caps transition-all ${sf===v?"bg-navy text-white":"bg-navy/10 text-navy hover:bg-navy/20"}`}>
+            {l}
+          </button>
+        ))}
+      </div>
+      <div className="space-y-2">
+        {items.map((item,i)=>{
+          const status = coord.themeStatus[item.sk]?.status||"not-started";
+          return (
+            <div key={i} className="flex items-start gap-4 p-4 rounded-lg border border-navy/10 hover:border-gold/30 transition-all" style={{background:"#FAF6EE"}}>
+              <div className="w-28 flex-shrink-0 text-center">
+                <div className="text-xs small-caps text-navy/40">{item.period}</div>
+                <div className="text-xs text-navy/50 mt-0.5">Year {item.yId}</div>
+              </div>
+              <div className={`w-0.5 self-stretch rounded ${item.stream==="british"?"bg-navy":"bg-gold"}`} />
+              <div className="flex-1">
+                <div className="text-xs small-caps mb-0.5" style={{color:item.stream==="british"?"#1B2A4A":"#B8893A"}}>
+                  {item.stream==="british"?"British Stream":"Italian Stream"}
+                </div>
+                <div className="text-xs text-navy/40 mb-1">{item.themeTitle}</div>
+                <p className="text-sm text-navy/80 leading-relaxed">{item.title}</p>
+              </div>
+              <div className="flex-shrink-0"><StatusPill status={status} onClick={()=>{}} /></div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<!--
+OUT OF SCOPE — CARRY FORWARD TO REAL BUILD:
+Auth & role separation (coordinator vs teacher views) · real persistence / database (state resets on reload — localStorage intentionally excluded per §10) · multi-user real-time sync of notes · email / push notifications when a month falls out of alignment · SIS / timetable integration to auto-assign teachers · curriculum versioning & year rollover · export of printable termly coordination report · teacher-facing planning workspace per theme.
+-->
+</body>
+</html>
