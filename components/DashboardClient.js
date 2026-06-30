@@ -45,21 +45,29 @@ export function DashboardClient({ user }) {
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
-    const [tsRes, syncRes, asgRes] = await Promise.all([
-      fetch("/api/theme-status"),
-      fetch("/api/sync"),
-      fetch("/api/assignments"),
-    ]);
-    const [ts, sync, asg] = await Promise.all([tsRes.json(), syncRes.json(), asgRes.json()]);
-    setThemeStatus(ts);
-    setSyncStates(sync);
-    setAssignments(Array.isArray(asg) ? asg : []);
-    if (isCoordinator) {
-      const uRes = await fetch("/api/users");
-      const u = await uRes.json();
-      setUsers(Array.isArray(u) ? u : []);
+    try {
+      const safeJson = async (res) => {
+        try { return await res.json(); } catch { return {}; }
+      };
+      const [tsRes, syncRes, asgRes] = await Promise.all([
+        fetch("/api/theme-status"),
+        fetch("/api/sync"),
+        fetch("/api/assignments"),
+      ]);
+      const [ts, sync, asg] = await Promise.all([safeJson(tsRes), safeJson(syncRes), safeJson(asgRes)]);
+      if (ts && !ts.error) setThemeStatus(ts);
+      if (sync && !sync.error) setSyncStates(sync);
+      setAssignments(Array.isArray(asg) ? asg : []);
+      if (isCoordinator) {
+        const uRes = await fetch("/api/users");
+        const u = await safeJson(uRes);
+        setUsers(Array.isArray(u) ? u : []);
+      }
+    } catch (e) {
+      console.error("fetchAll error:", e);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [isCoordinator]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
