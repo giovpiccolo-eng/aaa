@@ -28,15 +28,9 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 bg-white rounded-3xl shadow-2xl p-10 max-w-sm w-full mx-4">
-        {/* Acorn mark */}
+        {/* School logo */}
         <div className="flex justify-center mb-6">
-          <div className="relative w-16 h-16 flex items-center justify-center rounded-2xl" style={{ backgroundColor: "#16494A" }}>
-            <svg viewBox="0 0 60 72" className="w-9 h-9">
-              <ellipse cx="30" cy="50" rx="18" ry="20" fill="#CAF104"/>
-              <rect x="27" y="28" width="6" height="14" rx="3" fill="#CAF104" opacity=".7"/>
-              <ellipse cx="30" cy="30" rx="16" ry="7" fill="#CAF104" opacity=".85"/>
-            </svg>
-          </div>
+          <img src="/logo-mark.svg" alt="Acorn International School" className="h-16 w-auto" />
         </div>
 
         {/* Lime rule */}

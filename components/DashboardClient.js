@@ -185,7 +185,7 @@ export function DashboardClient({ user }) {
         <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between gap-4">
           {/* Logo + wordmark */}
           <div className="flex items-center gap-3">
-            <AcornMark size={22} color={LIME} />
+            <img src="/logo-mark.svg" alt="Acorn International School" className="h-9 w-auto" />
             <div>
               <span className="font-bold text-white text-lg leading-none" style={{ fontFamily: "'Fredoka', sans-serif" }}>
                 Concordance
